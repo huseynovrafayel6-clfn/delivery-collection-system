@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="update-shipments-remove-receiver-id-add-fields" author="cliffean">
+
+        <!-- 1. Foreign key sil -->
+        <dropForeignKeyConstraint
+                baseTableName="shipments"
+                constraintName="fk_shipments_receiver"/>
+
+        <!-- 2. Column sil -->
+        <dropColumn
+                tableName="shipments"
+                columnName="receiver_id"/>
+
+        <!-- 3. Yeni columnlar əlavə et -->
+        <addColumn tableName="shipments">
+
+            <column name="receiver_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="receiver_email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="receiver_phone_number" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="update-shipments-add-fields" author="cliffean">
+        <addColumn tableName="shipments">
+
+            <column name="status" type="VARCHAR(50)">
+            </column>
+
+
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2nd-update-shipments-add-fields" author="cliffean">
+
+        <dropColumn
+                tableName="shipments"
+                columnName="status"/>
+
+        <addColumn tableName="shipments">
+
+            <column name="status" type="VARCHAR(50)">
+            </column>
+
+
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="3rd-update-shipments-add-fields" author="cliffean">
+
+        <addColumn tableName="shipments">
+
+            <column name="is_deleted" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+
+
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

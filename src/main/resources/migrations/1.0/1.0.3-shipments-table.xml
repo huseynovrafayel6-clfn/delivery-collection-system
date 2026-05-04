@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="create-shipments-table" author="cliffean">
+
+        <createTable tableName="shipments">
+
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="sender_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="receiver_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="delivery_address" type="VARCHAR(255)"/>
+
+            <column name="weight" type="DECIMAL(10,2)"/>
+
+            <column name="dimensions" type="VARCHAR(100)"/>
+
+            <column name="service_type" type="VARCHAR(50)"/>
+
+            <column name="delivery_type" type="VARCHAR(50)"/>
+
+            <column name="notes" type="VARCHAR(500)"/>
+
+            <column name="tracking_number" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP"/>
+
+        </createTable>
+
+        <!-- Foreign Keys -->
+        <addForeignKeyConstraint
+                baseTableName="shipments"
+                baseColumnNames="sender_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_shipments_sender"/>
+
+        <addForeignKeyConstraint
+                baseTableName="shipments"
+                baseColumnNames="receiver_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_shipments_receiver"/>
+
+    </changeSet>
+
+</databaseChangeLog>

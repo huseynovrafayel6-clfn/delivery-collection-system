@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="role_tables" author="cliffean">
+
+        <!-- ROLES TABLE -->
+            <createTable tableName="roles">
+                <column name="id" type="BIGINT" autoIncrement="true">
+                    <constraints primaryKey="true" nullable="false"/>
+                </column>
+
+                <column name="name" type="VARCHAR(255)">
+                    <constraints nullable="false"/>
+                </column>
+
+                <column name="description" type="VARCHAR(255)"/>
+
+                <column name="is_deleted" type="BOOLEAN">
+                    <constraints nullable="false"/>
+                </column>
+            </createTable>
+
+
+        <!-- ROLE_OBJECTS TABLE -->
+        <createTable tableName="role_objects">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="description" type="VARCHAR(255)"/>
+
+            <column name="is_deleted" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- ROLE_ACCESSES TABLE -->
+        <createTable tableName="role_accesses">
+            <column name="role_id" type="BIGINT"/>
+            <column name="role_object_id" type="BIGINT"/>
+
+            <column name="read" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="create" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="edit" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="delete" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_deleted" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- FK: role_accesses.role_id → roles.id -->
+        <addForeignKeyConstraint
+                baseTableName="role_accesses"
+                baseColumnNames="role_id"
+                constraintName="fk_role_accesses_role_id"
+                referencedTableName="roles"
+                referencedColumnNames="id"
+                onDelete="NO ACTION"
+                onUpdate="NO ACTION"
+                validate="true"/>
+
+        <!-- FK: role_accesses.role_object_id → role_objects.id -->
+        <addForeignKeyConstraint
+                baseTableName="role_accesses"
+                baseColumnNames="role_object_id"
+                constraintName="fk_role_accesses_role_object_id"
+                referencedTableName="role_objects"
+                referencedColumnNames="id"
+                onDelete="NO ACTION"
+                onUpdate="NO ACTION"
+                validate="true"/>
+
+    </changeSet>
+
+    <!-- FK: user.role_id → roles.id -->
+    <changeSet id="users-roles-table" author="cliffean">
+        <createTable tableName="users_roles">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Composite Primary Key -->
+        <addPrimaryKey
+                columnNames="user_id, role_id"
+                constraintName="pk_users_roles"
+                tableName="users_roles"/>
+
+        <!-- Foreign Keys -->
+        <addForeignKeyConstraint
+                baseTableName="users_roles"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_users_roles_user"/>
+
+        <addForeignKeyConstraint
+                baseTableName="users_roles"
+                baseColumnNames="role_id"
+                referencedTableName="roles"
+                referencedColumnNames="id"
+                constraintName="fk_users_roles_role"/>
+    </changeSet>
+
+</databaseChangeLog>

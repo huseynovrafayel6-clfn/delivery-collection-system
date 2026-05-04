@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/delivery_collection_system
+    username: postgres
+    password: 12345678
+    hikari:
+      connection-timeout: 30000
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      keepalive-time: 60000
+      minimum-idle: 3
+      maximum-pool-size: 4
+      auto-commit: true
+      connection-test-query: select 1
+      jpa:
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            default_schema: public
+        hibernate:
+          ddl-auto: none
+        show-sql: false
+        defer-datasource-initialization: false
+        open-in-view: false
+      h2:
+        console:
+          enabled: true
+      sql:
+        init:
+          mode: always
+
+
+
+security:
+  jwt:
+    access-token-validity-time: 1800000
+    public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8e50crWVMBp9hje6I3qL97BxgJOoQO49awR1wlgy+Q56CmPZ+rtcfWurMykA/mmQRUt78+gdg6YVpF8jkL0+r20jOjyYFapriWEh7L7Q8fHL1Fs2nVbsM31cGDaW+Lv8xto/tm+c1VN+VEirALG2PxA3J7Ctlnpmtvl+Aa4elz01nI8SJA6Z1JpZAk786bOwbaVXmRGnu9UFAPpAcHWOHFGVVQkyVbKwA9BcEh823NM5IYc+wwz1b7uMOXjkA+ge9T+iQVDynE5/KpGoGxjT1XgYGT4dP2zieF0ZYnRCZUoDgtHs+VcIgAGSSNni8LJR6k2ATUZkZ+fZu9YeduhJSwIDAQAB
+    private-key: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDx7nRytZUwGn2GN7ojeov3sHGAk6hA7j1rBHXCWDL5DnoKY9n6u1x9a6szKQD+aZBFS3vz6B2DphWkXyOQvT6vbSM6PJgVqmuJYSHsvtDx8cvUWzadVuwzfVwYNpb4u/zG2j+2b5zVU35USKsAsbY/EDcnsK2Wema2+X4Brh6XPTWcjxIkDpnUmlkCTvzps7BtpVeZEae71QUA+kBwdY4cUZVVCTJVsrAD0FwSHzbc0zkhhz7DDPVvu4w5eOQD6B71P6JBUPKcTn8qkagbGNPVeBgZPh0/bOJ4XRlidEJlSgOC0ez5VwiAAZJI2eLwslHqTYBNRmRn59m71h526ElLAgMBAAECggEAIIdzNoCOIdd7UjfIT4CTikcPSSj8DK2b1M8BixMzLgP8H80uNXAfbv5c7guQ287+JtBlRwsfe3Xc32rVYYmN1fuNgC/pM7HkNKa6miuhSi68kn3TLuj4PbIY1xPxTQTFvPJXx7ljySvT8WmLPel8e308KpovCkEZ8iHuBzQjXn/e9uqGDY7cxmx2AQhfcmdDiLTL5esCRAWMEhRtpwo0kMuIu/j7edK0dVgWLOCS6KD0QIeMzKENcn0Y9JhKY1cvmdV2+wTrOWiXzFUldkatBUf68v/hetWDNNhFGxNpIRwatrNFxABb8fVWryjqFr2zXlToYEiK1q+onIcbomAIaQKBgQD+M3tzQNN1Q7tuM6mbs7+WucAp1/zdWspmqF5h7X9PkZcdMfp7ZU9LOJZgQebGFoC16iRypMxgIyNOjBAROizL4HW1qo34m0xprcoI/pnROMUf5BFW049rX15JSbY27jk1G+PkjS+PbvLd3G/sxZ+9/r4d29Qfy34QZqsc3N598wKBgQDzpL6gI6pm1uD8oXWefNL/ZasbHHnmb/rEoL/czaORwspsOHySIFVEL8ORWV3ypSOwddG6In0MLF1+sJfanlc1cCUtM1+UC/JWMCNFg0mIG0hlV2/SjwwO8PUwP4pmMEYnySZP6T4ypne5GdOLFV9DBjx27IqYaz45aMbFzwTlSQKBgQC5EQAig6Kvr/UoISKtQesNMATQMfhdq3jJznCQeRkD8+oBjl5fMf3NtM/+GlyKAN4KEwIgGQzWPR66U8xqzmDIuYzZCue7hEzYb3c0ny+bG+qf8ioRfYrf0BnT339ydHNf0ANVZNioY00b6x3tUl+fMnR1RpMj5sHL7QNMyxyMswKBgHBnMda5fZTiT3vdlWDf34waQH1KfuaUBNIQA1P/vxWxEygoSzgzGINTsdrtqs0V6MgxIufHn38tPJkFKZmfcUZjDZOz3sVzWYLvxGX+cr8LLzQpyZoPipWeDtAKkHQik0spnrZBOgOuDw/jXVgOLRvD1cNbz3kQCO39a664ml6ZAoGAZ0uHfJcfde5Keali4G/NcDqLm4lfWdH03DiUjEox2lRJfdAa7/D+AU0wus09dKAJHv9KeLCGK/2i7IqpvwMFRWEkJ6Rc6dyUqYRmDuHTdUd3ubJdZ/hSnl6jYK3SzdoRVhP6Zntrm4Hr3+Vlzs2rbmz0Dms+rzaDpTXJxgF0Ta4=
+    refresh-token-validity-time: 86400000
