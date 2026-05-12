@@ -77,7 +77,8 @@ public class SecurityConfig {
 
                     // Auth URLs
                     request.requestMatchers("/v1/auth/logout").authenticated();
-                    request.requestMatchers("/v1/auth/**").permitAll();
+                    request.requestMatchers("/v1/auth/me").permitAll();
+                    request.requestMatchers("/v1/auth/**").anonymous();
                     request.anyRequest().permitAll();
 
                 })

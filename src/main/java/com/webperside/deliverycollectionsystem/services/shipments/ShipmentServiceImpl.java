@@ -29,7 +29,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public Long addShipment(ShipmentPayload payload) {
-        Shipment shipment = fromPayloadToShipment(payload);
+        Shipment shipment = fromPayloadToShipment(payload, new Shipment());
         shipmentRepository.save(shipment);
         return shipment.getId();
     }
@@ -73,16 +73,13 @@ public class ShipmentServiceImpl implements ShipmentService {
         Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber).orElseThrow(()->BaseException.notFound(Shipment.class.getSimpleName(), "trackingNumber", trackingNumber));
         return fromShipmentToResponse(shipment);
 
-
     }
 
     @Override
     public Long updateShipmentById(Long id, ShipmentPayload payload) {
-        if (!(shipmentRepository.findById(id).isPresent())) {
-            throw BaseException.notFound(Shipment.class.getSimpleName(), "id", id);
-        }
-        Shipment shipment = fromPayloadToShipment(payload);
-        shipment.setId(id);
+        Shipment shipment = fromPayloadToShipment(payload, shipmentRepository.findById(id).orElseThrow(
+                ()->BaseException.notFound(Shipment.class.getSimpleName(), "id", id))
+        );
         shipmentRepository.save(shipment);
         return shipment.getId();
     }
@@ -121,23 +118,23 @@ public class ShipmentServiceImpl implements ShipmentService {
         return userInfo;
     }
 
-    private Shipment fromPayloadToShipment(ShipmentPayload payload) {
+    private Shipment fromPayloadToShipment(ShipmentPayload payload, Shipment shipment) {
+
         UserInfo userInfo = authBusinessService.getCurrentUser();
         User sender = userService.getById(userInfo.getId());
+        shipment.setSender(sender);
+        shipment.setReceiverName(payload.getReceiverName());
+        shipment.setReceiverEmail(payload.getReceiverEmail());
+        shipment.setReceiverPhoneNumber(payload.getReceiverPhoneNumber());
+        shipment.setDeliveryAddress(payload.getDeliveryAddress());
+        shipment.setWeight(payload.getWeight());
+        shipment.setDimensions(payload.getDimensions());
+        shipment.setServiceType(payload.getServiceType());
+        shipment.setDeliveryType(payload.getDeliveryType());
+        shipment.setNotes(payload.getNotes());
+        shipment.setStatus(payload.getStatus());
 
-        Shipment shipment = Shipment.builder()
-                .sender(sender)
-                .receiverName(payload.getReceiverName())
-                .receiverEmail(payload.getReceiverEmail())
-                .receiverPhoneNumber(payload.getReceiverPhoneNumber())
-                .deliveryAddress(payload.getDeliveryAddress())
-                .weight(payload.getWeight())
-                .dimensions(payload.getDimensions())
-                .serviceType(payload.getServiceType())
-                .deliveryType(payload.getDeliveryType())
-                .notes(payload.getNotes())
-                .status(payload.getStatus())
-                .build();
+
         return shipment;
     }
 

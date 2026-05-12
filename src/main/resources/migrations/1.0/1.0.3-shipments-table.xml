@@ -63,4 +63,24 @@
 
     </changeSet>
 
+    <changeSet id="created-at-nullable-update" author="cliffean">
+        <dropNotNullConstraint
+                tableName="shipments"
+                columnName="created_at"
+                columnDataType="TIMESTAMP"/>
+
+        <dropDefaultValue
+                tableName="shipments"
+                columnName="created_at"
+                columnDataType="TIMESTAMP"/>
+
+    </changeSet>
+
+    <changeSet id="add-not-null-created-at" author="cliffean">
+        <addNotNullConstraint
+                tableName="shipments"
+                columnName="created_at"
+                columnDataType="TIMESTAMP"/>
+    </changeSet>
+
 </databaseChangeLog>

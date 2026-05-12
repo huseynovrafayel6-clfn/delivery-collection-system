@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="create-assignments-table" author="cliffean">
+
+    <createTable tableName="assignments">
+        <column name="id" type="BIGINT" autoIncrement="true">
+            <constraints primaryKey="true" nullable="false"/>
+        </column>
+
+        <column name="shipment_id" type="BIGINT">
+            <constraints nullable="false"/>
+        </column>
+
+        <column name="courier_id" type="BIGINT">
+            <constraints nullable="false"/>
+        </column>
+
+        <column name="status" type="VARCHAR(20)">
+            <constraints nullable="false"/>
+        </column>
+
+        <column name="assignment_type" type="VARCHAR(20)">
+            <constraints nullable="false"/>
+        </column>
+
+        <column name="assigned_at" type="TIMESTAMP">
+            <constraints nullable="false"/>
+        </column>
+
+        <column name="updated_at" type="TIMESTAMP"/>
+    </createTable>
+
+    <addForeignKeyConstraint
+            baseTableName="assignments"
+            baseColumnNames="shipment_id"
+            referencedTableName="shipments"
+            referencedColumnNames="id"
+            constraintName="fk_assignment_shipment"/>
+
+    <addForeignKeyConstraint
+            baseTableName="assignments"
+            baseColumnNames="courier_id"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            constraintName="fk_assignment_courier"/>
+
+    </changeSet>
+
+    <changeSet id="assigned-at-nullable-update" author="cliffean">
+        <dropNotNullConstraint
+                tableName="assignments"
+                columnName="assigned_at"
+                columnDataType="TIMESTAMP"/>
+    </changeSet>
+
+    <changeSet id="add-not-null-assigned-at" author="cliffean">
+        <addNotNullConstraint
+                tableName="assignments"
+                columnName="assigned_at"
+                columnDataType="TIMESTAMP"/>
+    </changeSet>
+
+    <changeSet id="add-is-deleted-to-assignments" author="cliffean">
+
+        <addColumn tableName="assignments">
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+</databaseChangeLog>

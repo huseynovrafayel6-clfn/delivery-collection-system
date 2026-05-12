@@ -1,5 +1,6 @@
 package com.webperside.deliverycollectionsystem.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.webperside.deliverycollectionsystem.model.enums.shipments.DeliveryType;
 import com.webperside.deliverycollectionsystem.model.enums.shipments.ServiceType;
 import com.webperside.deliverycollectionsystem.model.enums.shipments.ShipmentStatus;
@@ -60,6 +61,8 @@ public class Shipment {
 
     @Column(unique = true, nullable = false, updatable = false)
     String trackingNumber;
+
+
 
     @PrePersist
     public void generateTrackingNumber() {

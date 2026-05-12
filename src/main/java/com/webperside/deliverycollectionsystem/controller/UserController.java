@@ -35,7 +35,7 @@ public class UserController {
         return BaseResponse.success(userService.updateById(payload, id));
     }
 
-    @PatchMapping("/users/{id}")
+    @PatchMapping("/update/status/roles/{id}")
     public BaseResponse<Long> updateUserForAdmin(@RequestBody UserForAdminPayload payload, @PathVariable Long id) {
         return BaseResponse.success(userService.updateByIdForAdmin(payload, id));
     }
