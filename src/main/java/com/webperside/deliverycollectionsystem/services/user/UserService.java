@@ -8,7 +8,6 @@ import com.webperside.deliverycollectionsystem.model.response.user.UserResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.Set;
 
 public interface UserService {
 

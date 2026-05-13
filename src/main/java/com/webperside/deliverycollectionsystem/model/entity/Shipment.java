@@ -62,8 +62,6 @@ public class Shipment {
     @Column(unique = true, nullable = false, updatable = false)
     String trackingNumber;
 
-
-
     @PrePersist
     public void generateTrackingNumber() {
         if (trackingNumber == null) {

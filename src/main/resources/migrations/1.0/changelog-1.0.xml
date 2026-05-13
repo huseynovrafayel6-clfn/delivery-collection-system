@@ -11,5 +11,6 @@
     <include file="migrations/1.0/1.0.4-alter-shipments-table.xml"/>
     <include file="migrations/1.0/1.0.5-pricing_rules-table.xml"/>
     <include file="migrations/1.0/1.0.6-assignments-table.xml"/>
+    <include file="migrations/1.0/1.0.7-tracking_events-table.xml"/>
 
 </databaseChangeLog>
