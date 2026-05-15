@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="create-tracking-events-table" author="chatgpt">
+
+        <createTable tableName="tracking_events">
+
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="shipment_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="description" type="VARCHAR(255)"/>
+
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <!-- Foreign Key -->
+        <addForeignKeyConstraint
+                baseTableName="tracking_events"
+                baseColumnNames="shipment_id"
+                referencedTableName="shipments"
+                referencedColumnNames="id"
+                constraintName="fk_tracking_events_shipment"
+                onDelete="CASCADE"/>
+
+        <!-- Index (performance üçün çox vacibdir) -->
+        <createIndex indexName="idx_tracking_events_shipment_id"
+                     tableName="tracking_events">
+            <column name="shipment_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="create-deliveries-table" author="cliffean">
+
+        <createTable tableName="deliveries">
+
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"
+                             primaryKeyName="pk_deliveries"
+                             nullable="false"/>
+            </column>
+
+            <column name="shipment_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="courier_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="started_at" type="TIMESTAMP"/>
+
+            <column name="delivered_at" type="TIMESTAMP"/>
+
+            <column name="failure_reason" type="VARCHAR(100)"/>
+
+            <column name="rescheduled_at" type="TIMESTAMP"/>
+
+            <column name="receiver_name" type="VARCHAR(255)"/>
+
+            <column name="notes" type="TEXT"/>
+
+            <column name="created_at" type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP"/>
+
+            <column name="is_deleted" type="BOOLEAN"
+                    defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <!-- shipment foreign key -->
+        <addForeignKeyConstraint
+                baseTableName="deliveries"
+                baseColumnNames="shipment_id"
+                constraintName="fk_deliveries_shipment"
+                referencedTableName="shipments"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <!-- courier foreign key -->
+        <addForeignKeyConstraint
+                baseTableName="deliveries"
+                baseColumnNames="courier_id"
+                constraintName="fk_deliveries_courier"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <!-- indexes -->
+        <createIndex tableName="deliveries"
+                     indexName="idx_deliveries_shipment_id">
+            <column name="shipment_id"/>
+        </createIndex>
+
+        <createIndex tableName="deliveries"
+                     indexName="idx_deliveries_courier_id">
+            <column name="courier_id"/>
+        </createIndex>
+
+        <createIndex tableName="deliveries"
+                     indexName="idx_deliveries_status">
+            <column name="status"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>
