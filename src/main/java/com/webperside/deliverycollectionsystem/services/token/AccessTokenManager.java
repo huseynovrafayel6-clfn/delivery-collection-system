@@ -54,6 +54,6 @@ public class AccessTokenManager implements TokenGenerator<User>,
 
     @Override
     public String getEmail(String token) {
-        return read(token).get(EMAIL_KEY, String.class);
+        return this.read(token).get(EMAIL_KEY, String.class);
     }
 }

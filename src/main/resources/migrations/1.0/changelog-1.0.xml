@@ -13,5 +13,8 @@
     <include file="migrations/1.0/1.0.6-assignments-table.xml"/>
     <include file="/migrations/1.0/1.0.7-tracking_events-table.xml"/>
     <include file="migrations/1.0/1.0.8-deliveries-table.xml"/>
+    <include file="migrations/1.0/1.0.9-proof_of_deliveries-table.xml"/>
+    <include file="migrations/1.0/1.1.0-otps-table.xml"/>
+    <include file="migrations/1.0/1.1.1-alter-proof_of_delivery-table.xml"/>
 
 </databaseChangeLog>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+<changeSet id="update-proof-of-deliveries-add-otp-relation" author="cliffean">
+
+    <!-- Köhnə sütunları sil -->
+    <dropColumn tableName="proof_of_deliveries"
+                columnName="otp_verified"/>
+
+    <dropColumn tableName="proof_of_deliveries"
+                columnName="otp_code"/>
+
+    <!-- Yeni otp_id sütunu əlavə et -->
+    <addColumn tableName="proof_of_deliveries">
+
+        <column name="otp_id" type="BIGINT"/>
+
+    </addColumn>
+
+    <!-- Foreign key -->
+    <addForeignKeyConstraint
+            baseTableName="proof_of_deliveries"
+            baseColumnNames="otp_id"
+            constraintName="fk_pod_otp"
+            referencedTableName="otps"
+            referencedColumnNames="id"/>
+
+    <!-- OneToOne üçün unique -->
+    <addUniqueConstraint
+            tableName="proof_of_deliveries"
+            columnNames="otp_id"
+            constraintName="uk_pod_otp"/>
+
+</changeSet>
+
+</databaseChangeLog>
