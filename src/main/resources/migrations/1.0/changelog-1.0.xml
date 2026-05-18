@@ -16,5 +16,6 @@
     <include file="migrations/1.0/1.0.9-proof_of_deliveries-table.xml"/>
     <include file="migrations/1.0/1.1.0-otps-table.xml"/>
     <include file="migrations/1.0/1.1.1-alter-proof_of_delivery-table.xml"/>
+    <include file="migrations/1.0/1.1.2-returns-table.xml"/>
 
 </databaseChangeLog>

@@ -39,9 +39,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(Long id) {
-        return userRepository.findById(id).orElseThrow(
+        User user = userRepository.findById(id).orElseThrow(
                 () -> BaseException.notFound(User.class.getSimpleName(), "id", id)
         );
+        if (user.isDeleted()){
+            throw BaseException.notFound(User.class.getSimpleName(), "id", id);
+        }
+        return user;
     }
 
     @Override
