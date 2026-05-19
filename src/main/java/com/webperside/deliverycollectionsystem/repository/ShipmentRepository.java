@@ -38,4 +38,12 @@ where s.id = :id
     Optional<ShipmentProjection> findProjectionById(Long id);
 
     @EntityGraph(attributePaths = {"sender"})
-    List<Shipment> findAllByIdInAndIsDeletedFalse(Iterable<Long> ids);}
+    List<Shipment> findAllByIdInAndIsDeletedFalse(Iterable<Long> ids);
+
+    List<Shipment> findAllBySenderIdAndIsDeletedFalseOrderByCreatedAtDesc(
+            Long senderId
+    );
+
+}
+
+
