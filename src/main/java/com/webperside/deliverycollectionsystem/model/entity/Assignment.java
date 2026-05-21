@@ -1,5 +1,6 @@
 package com.webperside.deliverycollectionsystem.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.webperside.deliverycollectionsystem.model.enums.assignments.AssignmentStatus;
 import com.webperside.deliverycollectionsystem.model.enums.assignments.AssignmentType;
 import jakarta.persistence.*;

@@ -1,6 +1,7 @@
 package com.webperside.deliverycollectionsystem.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.webperside.deliverycollectionsystem.model.enums.shipments.DeliveryType;
 import com.webperside.deliverycollectionsystem.model.enums.shipments.ServiceType;
 import com.webperside.deliverycollectionsystem.model.enums.shipments.ShipmentStatus;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity

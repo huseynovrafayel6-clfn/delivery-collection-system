@@ -1,6 +1,7 @@
 package com.webperside.deliverycollectionsystem.repository;
 
 import com.webperside.deliverycollectionsystem.model.dto.AssignmentDto;
+import com.webperside.deliverycollectionsystem.model.dto.CourierPerformanceProjection;
 import com.webperside.deliverycollectionsystem.model.entity.Assignment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
