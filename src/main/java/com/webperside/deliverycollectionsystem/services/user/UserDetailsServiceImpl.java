@@ -27,6 +27,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userService.getByEmail(username);
+        if (user.isDeleted())
+            throw BaseException.notFound(User.class.getSimpleName(), "email", username);
         List<RoleDto> roles = userService.getRolesByEmail(username);
 
         List<SimpleGrantedAuthority> authorities = roles.stream()

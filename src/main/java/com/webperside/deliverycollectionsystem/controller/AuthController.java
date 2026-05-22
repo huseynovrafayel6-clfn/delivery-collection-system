@@ -24,8 +24,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public BaseResponse<Void> logout() {
-        authBusinessService.logout();
+    public BaseResponse<Void> logout(@RequestBody RefreshTokenPayload payload) {
+        authBusinessService.logout(payload);
         return BaseResponse.success();
     }
 

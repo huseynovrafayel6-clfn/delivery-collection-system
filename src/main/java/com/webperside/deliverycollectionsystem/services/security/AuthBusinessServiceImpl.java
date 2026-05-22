@@ -3,6 +3,7 @@ package com.webperside.deliverycollectionsystem.services.security;
 import com.webperside.deliverycollectionsystem.exception.BaseException;
 import com.webperside.deliverycollectionsystem.model.dto.RefreshTokenDto;
 import com.webperside.deliverycollectionsystem.model.dto.UserInfo;
+import com.webperside.deliverycollectionsystem.model.entity.RefreshToken;
 import com.webperside.deliverycollectionsystem.model.entity.Role;
 import com.webperside.deliverycollectionsystem.model.entity.User;
 import com.webperside.deliverycollectionsystem.model.mappers.UserEntityMapper;
@@ -13,6 +14,7 @@ import com.webperside.deliverycollectionsystem.model.response.login.LoginRespons
 
 import com.webperside.deliverycollectionsystem.model.security.LoggedInUserDetails;
 
+import com.webperside.deliverycollectionsystem.repository.RefreshTokenRepository;
 import com.webperside.deliverycollectionsystem.services.roles.RoleService;
 import com.webperside.deliverycollectionsystem.services.token.AccessTokenManager;
 import com.webperside.deliverycollectionsystem.services.token.RefreshTokenManager;
@@ -23,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +35,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.webperside.deliverycollectionsystem.model.enums.response.ErrorResponseMessages.EMAIL_ALREADY_REGISTERED;
+import static com.webperside.deliverycollectionsystem.model.enums.response.ErrorResponseMessages.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,21 +49,28 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
      RefreshTokenManager refreshTokenManager;
      RoleService roleService;
      PasswordEncoder passwordEncoder;
-
+     RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public LoginResponse login(LoginPayload payload) {
         authenticate(payload);
-        return prepareLoginResponse(payload.getEmail(), payload.isRememberMe());
+        LoginResponse loginResponse = prepareLoginResponse(payload.getEmail(), payload.isRememberMe());
+        log.info("{} user login succeed", payload.getEmail());
+        return loginResponse;
     }
 
     @Override
-    public void logout() {
+    public void logout(RefreshTokenPayload payload) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
 
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(payload.getRefreshToken()).orElseThrow(
+                () -> BaseException.of(REFRESH_TOKEN_NOT_ALLOWED)
+        );
+
+        refreshTokenRepository.delete(refreshToken);
         log.info("{} user logout succeed", userDetails.getUsername());
 
         SecurityContextHolder.clearContext();
@@ -68,6 +78,17 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
 
     @Override
     public LoginResponse refresh(RefreshTokenPayload payload) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof LoggedInUserDetails) {
+            throw BaseException.of(REFRESH_TOKEN_NOT_ALLOWED);
+        }
+
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(payload.getRefreshToken()).orElseThrow(
+                () -> BaseException.of(REFRESH_TOKEN_NOT_ALLOWED)
+        );
+        if (refreshToken.isRevoked())
+            throw BaseException.of(REFRESH_TOKEN_NOT_ALLOWED);
+
         return prepareLoginResponse(
                 refreshTokenManager.getEmail(payload.getRefreshToken()),
                 payload.isRememberMe()

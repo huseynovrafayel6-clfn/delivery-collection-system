@@ -12,6 +12,8 @@ public enum ErrorResponseMessages implements ResponseMessages {
     UNEXPECTED("unexpected", "Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR),
     NOT_FOUND("not_found_%s", "%s can't find %s", HttpStatus.NOT_FOUND),
     EMAIL_ALREADY_REGISTERED("email_already_registered", "Email already registered", HttpStatus.CONFLICT),
+    ACCESS_TOKEN_NOT_ALLOWED("access_token_not_allowed", "Access token is not allowed for this request", HttpStatus.FORBIDDEN),
+    REFRESH_TOKEN_NOT_ALLOWED("refresh_token_not_allowed", "Refresh token is not allowed for this request", HttpStatus.FORBIDDEN),
     FORBIDDEN("forbidden", "Forbidden", HttpStatus.FORBIDDEN),
     USER_NOT_ACTIVE("user_not_active", "User is not active", HttpStatus.FORBIDDEN),
     UNAUTHORIZED("unauthorized", "Did not authorize", HttpStatus.UNAUTHORIZED);

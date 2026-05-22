@@ -11,7 +11,7 @@ public interface AuthBusinessService {
 
     LoginResponse login(LoginPayload payload);
 
-    void logout();
+    void logout(RefreshTokenPayload payload);
 
     LoginResponse refresh(RefreshTokenPayload payload);
 

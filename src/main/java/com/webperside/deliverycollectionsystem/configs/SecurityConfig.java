@@ -21,10 +21,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -62,6 +64,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    AuthorizationFilter authorizationFilter,
                                                    AuthEntryPoint authEntryPoint,
+                                                   AuthAccessDeniedHandler authAccessDeniedHandler,
                                                    AuthenticationProvider authenticationProvider) throws Exception {
         return http
                 .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -77,13 +80,16 @@ public class SecurityConfig {
 
                     // Auth URLs
                     request.requestMatchers("/v1/auth/logout").authenticated();
+                    request.requestMatchers("/v1/auth/refresh").permitAll();
                     request.requestMatchers("/v1/auth/me").permitAll();
                     request.requestMatchers("/v1/auth/**").anonymous();
                     request.anyRequest().permitAll();
 
                 })
-                .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(eh -> eh.authenticationEntryPoint(authEntryPoint))
+                .exceptionHandling(eh -> eh
+                        .authenticationEntryPoint(authEntryPoint)
+                        .accessDeniedHandler(authAccessDeniedHandler)
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)))
                 .build();
@@ -108,6 +114,26 @@ public class SecurityConfig {
                              AuthenticationException authException) {
 
             resolver.resolveException(request,response, null, BaseException.of(ErrorResponseMessages.FORBIDDEN));
+        }
+    }
+
+    @Component
+    @Slf4j
+    public static class AuthAccessDeniedHandler implements AccessDeniedHandler {
+
+        @Qualifier("handlerExceptionResolver")
+        private final HandlerExceptionResolver resolver;
+
+        public AuthAccessDeniedHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+            this.resolver = resolver;
+        }
+
+        @Override
+        public void handle(HttpServletRequest request,
+                           HttpServletResponse response,
+                           AccessDeniedException accessDeniedException) {
+
+            resolver.resolveException(request, response, null, BaseException.of(ErrorResponseMessages.FORBIDDEN));
         }
     }
 }

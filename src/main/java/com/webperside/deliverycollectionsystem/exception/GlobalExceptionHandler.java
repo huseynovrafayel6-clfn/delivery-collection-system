@@ -15,4 +15,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getResponseMessage().status()).body(BaseResponse.error(ex));
 
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseResponse<?>> handleException(Exception ex) {
+        log.error("Unexpected exception", ex);
+        BaseException baseException = BaseException.unexpected();
+        return ResponseEntity.status(baseException.getResponseMessage().status()).body(BaseResponse.error(baseException));
+    }
 }
