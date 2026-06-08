@@ -1,4 +1,11 @@
 spring:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: courseerpredis
+      repositories:
+        enabled: false
   datasource:
     url: jdbc:postgresql://localhost:5432/delivery_collection_system
     username: postgres

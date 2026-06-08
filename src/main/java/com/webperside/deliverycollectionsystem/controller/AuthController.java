@@ -2,9 +2,7 @@ package com.webperside.deliverycollectionsystem.controller;
 
 
 import com.webperside.deliverycollectionsystem.model.dto.UserInfo;
-import com.webperside.deliverycollectionsystem.model.payload.auth.LoginPayload;
-import com.webperside.deliverycollectionsystem.model.payload.auth.RefreshTokenPayload;
-import com.webperside.deliverycollectionsystem.model.payload.auth.SignUpPayload;
+import com.webperside.deliverycollectionsystem.model.payload.auth.*;
 import com.webperside.deliverycollectionsystem.model.response.BaseResponse;
 import com.webperside.deliverycollectionsystem.model.response.login.LoginResponse;
 import com.webperside.deliverycollectionsystem.services.security.AuthBusinessService;
@@ -24,8 +22,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public BaseResponse<Void> logout(@RequestBody RefreshTokenPayload payload) {
-        authBusinessService.logout(payload);
+    public BaseResponse<Void> logout(@RequestBody TokenPayload tokenPayload) {
+        authBusinessService.logout(tokenPayload);
         return BaseResponse.success();
     }
 

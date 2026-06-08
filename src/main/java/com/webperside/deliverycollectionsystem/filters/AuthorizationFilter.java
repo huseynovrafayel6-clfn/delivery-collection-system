@@ -1,41 +1,28 @@
 package com.webperside.deliverycollectionsystem.filters;
 
 import com.webperside.deliverycollectionsystem.exception.BaseException;
+import com.webperside.deliverycollectionsystem.model.entity.User;
 import com.webperside.deliverycollectionsystem.model.security.LoggedInUserDetails;
-import com.webperside.deliverycollectionsystem.services.security.AuthBusinessService;
-import com.webperside.deliverycollectionsystem.services.token.AccessTokenManager;
+import com.webperside.deliverycollectionsystem.services.redis.RedisService;
 import com.webperside.deliverycollectionsystem.services.user.UserService;
 import com.webperside.deliverycollectionsystem.utils.PublicPrivateKeyUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.webperside.deliverycollectionsystem.model.entity.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.IOException;
-import java.security.PublicKey;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static com.webperside.deliverycollectionsystem.constants.token.TokenConstants.PREFIX;
 
 @Slf4j
 @Component
@@ -43,11 +30,14 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     private final PublicPrivateKeyUtils jwtUtils;
     private final UserService userService;
+    private final RedisService redisService;
 
     public AuthorizationFilter(PublicPrivateKeyUtils jwtUtils,
-                               UserService userService) {
+                               UserService userService,
+                               RedisService redisService) {
         this.jwtUtils = jwtUtils;
         this.userService = userService;
+        this.redisService = redisService;
     }
 
     @Override
@@ -58,21 +48,24 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             if (jwt != null) {
                 try {
 
-                        Claims claims = jwtUtils.getClaimsFromJwtToken(jwt);
-                        String tokenType = claims.get("type", String.class);
+                    Claims claims = jwtUtils.getClaimsFromJwtToken(jwt);
+                    String tokenType = claims.get("type", String.class);
 
-                        // Reject if token is a refresh token or blacklisted
-                        if ("refresh".equals(tokenType)) {
-                            log.warn("Attempt to use a refresh token as an access token.");
-                            request.setAttribute("jwt_exception", new Exception("Attempt to use a refresh token as an access token."));
-                        } else {
+                    // Reject if token is a refresh token or blacklisted
+                    if ("refresh".equals(tokenType)) {
+                        log.warn("Attempt to use a refresh token as an access token.");
+                        request.setAttribute("jwt_exception", new Exception("Attempt to use a refresh token as an access token."));
+                    } else {
+
+                        if (redisService.exists("access_token:" + jwt)) {
+
                             String username = claims.getSubject();
 
                             User user = userService.getById(Long.parseLong(username));
                             String email = user.getEmail();
                             String password = user.getPassword();
 
-                            List<SimpleGrantedAuthority> authorities =userService.getRolesByEmail(email).stream()
+                            List<SimpleGrantedAuthority> authorities = userService.getRolesByEmail(email).stream()
                                     .map(role -> new SimpleGrantedAuthority(role.getName()))
                                     .toList();
 
@@ -88,9 +81,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                             SecurityContextHolder.getContext().setAuthentication(authentication);
+                        } else {
+                            throw BaseException.unauthorized();
                         }
+                    }
 
-                } catch (ExpiredJwtException e) {
+                } catch (ExpiredJwtException | BaseException e) {
                     log.warn("JWT token is expired: {}", e.getMessage());
                     request.setAttribute("jwt_exception", e);
                 } catch (Exception e) {

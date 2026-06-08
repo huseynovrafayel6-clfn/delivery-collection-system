@@ -5,6 +5,7 @@ import com.webperside.deliverycollectionsystem.model.properties.security.Securit
 import com.webperside.deliverycollectionsystem.services.base.TokenGenerator;
 import com.webperside.deliverycollectionsystem.services.base.TokenReader;
 import com.webperside.deliverycollectionsystem.services.getters.EmailGetter;
+import com.webperside.deliverycollectionsystem.services.redis.RedisService;
 import com.webperside.deliverycollectionsystem.utils.PublicPrivateKeyUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static com.webperside.deliverycollectionsystem.constants.token.TokenConstants.EMAIL_KEY;
 
@@ -24,6 +26,7 @@ public class AccessTokenManager implements TokenGenerator<User>,
         TokenReader<Claims>, EmailGetter {
 
     private final SecurityProperties securityProperties;
+    private final RedisService redisService;
 
     @Override
     public String generate(User obj) {
@@ -34,13 +37,22 @@ public class AccessTokenManager implements TokenGenerator<User>,
         Date now = new Date();
         Date exp = new Date(now.getTime() + securityProperties.getJwt().getAccessTokenValidityTime());
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(String.valueOf(obj.getId()))
                 .setIssuedAt(now)
                 .setExpiration(exp)
                 .addClaims(claims)
                 .signWith(PublicPrivateKeyUtils.getPrivateKey(), SignatureAlgorithm.RS256)
                 .compact();
+
+        redisService.save(
+                "access_token:" + token,
+                obj.getId(),
+                exp.getTime() - System.currentTimeMillis(),
+                TimeUnit.MILLISECONDS
+        );
+
+        return token;
     }
 
     @Override

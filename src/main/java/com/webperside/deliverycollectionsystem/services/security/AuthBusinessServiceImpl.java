@@ -7,14 +7,13 @@ import com.webperside.deliverycollectionsystem.model.entity.RefreshToken;
 import com.webperside.deliverycollectionsystem.model.entity.Role;
 import com.webperside.deliverycollectionsystem.model.entity.User;
 import com.webperside.deliverycollectionsystem.model.mappers.UserEntityMapper;
-import com.webperside.deliverycollectionsystem.model.payload.auth.LoginPayload;
-import com.webperside.deliverycollectionsystem.model.payload.auth.RefreshTokenPayload;
-import com.webperside.deliverycollectionsystem.model.payload.auth.SignUpPayload;
+import com.webperside.deliverycollectionsystem.model.payload.auth.*;
 import com.webperside.deliverycollectionsystem.model.response.login.LoginResponse;
 
 import com.webperside.deliverycollectionsystem.model.security.LoggedInUserDetails;
 
 import com.webperside.deliverycollectionsystem.repository.RefreshTokenRepository;
+import com.webperside.deliverycollectionsystem.services.redis.RedisService;
 import com.webperside.deliverycollectionsystem.services.roles.RoleService;
 import com.webperside.deliverycollectionsystem.services.token.AccessTokenManager;
 import com.webperside.deliverycollectionsystem.services.token.RefreshTokenManager;
@@ -50,6 +49,7 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
      RoleService roleService;
      PasswordEncoder passwordEncoder;
      RefreshTokenRepository refreshTokenRepository;
+     RedisService redisService;
 
     @Override
     public LoginResponse login(LoginPayload payload) {
@@ -60,15 +60,17 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
     }
 
     @Override
-    public void logout(RefreshTokenPayload payload) {
+    public void logout(TokenPayload tokenPayload) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
 
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(payload.getRefreshToken()).orElseThrow(
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(tokenPayload.getRefreshToken()).orElseThrow(
                 () -> BaseException.of(REFRESH_TOKEN_NOT_ALLOWED)
         );
+
+        redisService.delete("access_token:"+tokenPayload.getAccessToken());
 
         refreshTokenRepository.delete(refreshToken);
         log.info("{} user logout succeed", userDetails.getUsername());

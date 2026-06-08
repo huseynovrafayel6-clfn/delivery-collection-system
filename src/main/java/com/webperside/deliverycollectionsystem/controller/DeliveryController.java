@@ -7,6 +7,7 @@ import com.webperside.deliverycollectionsystem.model.response.deliveries.Deliver
 import com.webperside.deliverycollectionsystem.services.deliveries.DeliveryService;
 import com.webperside.deliverycollectionsystem.services.deliveries.business.DeliveryBusinessService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class DeliveryController {
     private final DeliveryBusinessService deliveryBusinessService;
 
     @PostMapping("/add")
+//    @PreAuthorize(value = "hasAuthority('string')")
     public BaseResponse<DeliveryResponse> addDelivery(DeliveryPayload payload){
         return BaseResponse.success(deliveryService.addDelivery(payload));
     }
